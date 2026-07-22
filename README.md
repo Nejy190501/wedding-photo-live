@@ -16,7 +16,7 @@
   </p>
 
   <p>
-    <a href="https://photos-mariage-leonie-liverance.netlify.app/" target="_blank"><strong>✨ Voir le site en direct (Live Demo) ✨</strong></a>
+    <a href="https://photos-mariage-leonie-liverance.netlify.app/" target="_blank"><strong>✨ Live Demo ✨</strong></a>
   </p>
   
   <p>
