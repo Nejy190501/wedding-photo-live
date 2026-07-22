@@ -25,7 +25,7 @@
 
 <br/>
 
-> **Note:** Ce projet a été développé avec l'assistance de l'IA (Google Gemini). 🤖✨
+> **Note:** This project was developed with the help of AI (Google Gemini). 🤖✨
 
 ---
 
@@ -33,8 +33,7 @@
 
 **Wedding Photo Live** is an interactive web application designed to let guests easily share photos during a wedding or event, and display them in real-time on a large screen (slideshow mode). It features a dedicated **Guest Space** for uploading photos and a **Host Dashboard** for managing the event, generating QR codes, and moderating content.
 
-*(Insert a screenshot of the app here)*
-<!-- ![Screenshot](./assets/screenshot.png) -->
+*<img width="1268" height="746" alt="Capture d&#39;écran 2026-07-22 124507" src="https://github.com/user-attachments/assets/c4e84659-99f2-48cf-b14f-aebd3a3fd49f" />*
 
 ---
 
