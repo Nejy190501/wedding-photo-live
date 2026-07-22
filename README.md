@@ -14,6 +14,10 @@
   <p>
     <b>A real-time collaborative photo gallery and slideshow for weddings and events.</b>
   </p>
+
+  <p>
+    <a href="https://photos-mariage-leonie-liverance.netlify.app/" target="_blank"><strong>✨ Voir le site en direct (Live Demo) ✨</strong></a>
+  </p>
   
   <p>
     <a href="#sparkles-features">Features</a> •
