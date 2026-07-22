@@ -1,0 +1,6 @@
+{
+  "name": "Wedding Photo Live",
+  "description": "Partagez et visualisez les photos de mariage en temps réel sur Google Drive grâce à un QR code, sans connexion requise pour les invités.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
