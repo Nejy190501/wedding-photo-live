@@ -1,22 +1,111 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+  
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
+  <img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite" />
+
+  <br />
+  <br />
+
+  <h1>💍 Wedding Photo Live</h1>
+  
+  <p>
+    <b>A real-time collaborative photo gallery and slideshow for weddings and events.</b>
+  </p>
+  
+  <p>
+    <a href="#sparkles-features">Features</a> •
+    <a href="#rocket-quick-start">Quick Start</a> •
+    <a href="#hammer_and_wrench-configuration">Configuration</a> •
+    <a href="#handshake-contributing">Contributing</a>
+  </p>
 </div>
 
-# Wedding Photo Live
+<br/>
 
-> **Note:** Ce projet a été développé avec l'assistance de l'IA (Google Gemini).
+> **Note:** Ce projet a été développé avec l'assistance de l'IA (Google Gemini). 🤖✨
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/88e2d6b3-d0f2-4119-b83a-63f53ae95bc7
+## 📸 About the Project
 
-## Run Locally
+**Wedding Photo Live** is an interactive web application designed to let guests easily share photos during a wedding or event, and display them in real-time on a large screen (slideshow mode). It features a dedicated **Guest Space** for uploading photos and a **Host Dashboard** for managing the event, generating QR codes, and moderating content.
 
-**Prerequisites:**  Node.js
+*(Insert a screenshot of the app here)*
+<!-- ![Screenshot](./assets/screenshot.png) -->
 
+---
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## :sparkles: Features
+
+- **📱 Guest Space**: Simple, mobile-friendly interface for guests to snap or upload photos instantly.
+- **🖥️ Live Slideshow**: A beautiful, real-time animated slideshow meant to be displayed on a projector.
+- **🛡️ Moderation Tools**: Hosts can review, approve, or delete photos before they appear on the big screen.
+- **📷 QR Code Generator**: Generate printable QR codes for guests to easily access the upload page.
+- **⚡ Real-time Sync**: Powered by Firebase Firestore and Storage for instant updates without refreshing.
+
+---
+
+## :rocket: Quick Start
+
+### Prerequisites
+
+Ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (v18 or higher recommended)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Nejy190501/wedding-photo-live.git
+   cd wedding-photo-live
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure the environment**
+   See the [Configuration](#hammer_and_wrench-configuration) section below to set up Firebase.
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+The application will be available at `http://localhost:5173`.
+
+---
+
+## :hammer_and_wrench: Configuration
+
+This project relies on **Firebase** (Authentication, Firestore, and Storage).
+
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env.local
+   ```
+2. Open `.env.local` and add your **Gemini API Key** if needed.
+3. Make sure to properly configure your `firebase-applet-config.json` with your Firebase project credentials.
+4. Enable **Anonymous Authentication** in your Firebase console.
+5. Set up Firestore rules and Storage rules to allow read/write access.
+
+---
+
+## :handshake: Contributing
+
+Contributions, issues, and feature requests are welcome!  
+Feel free to check out the [issues page](https://github.com/Nejy190501/wedding-photo-live/issues) and read the [CONTRIBUTING.md](./CONTRIBUTING.md) guide.
+
+## :scroll: License
+
+This project is licensed under the [MIT License](./LICENSE).
+
+<div align="center">
+  <br/>
+  <i>Made with ❤️ for beautiful memories.</i>
+</div>

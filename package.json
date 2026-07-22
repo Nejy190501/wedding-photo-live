@@ -1,7 +1,23 @@
 {
-  "name": "mariage-photo-live",
+  "name": "wedding-photo-live",
   "private": true,
   "version": "1.0.0",
+  "description": "A real-time collaborative photo gallery and slideshow for weddings and events.",
+  "author": "Nejy190501",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nejy190501/wedding-photo-live.git"
+  },
+  "keywords": [
+    "react",
+    "wedding",
+    "photos",
+    "real-time",
+    "firebase",
+    "slideshow",
+    "gallery"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
