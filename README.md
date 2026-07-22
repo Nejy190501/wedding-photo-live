@@ -33,7 +33,9 @@
 
 **Wedding Photo Live** is an interactive web application designed to let guests easily share photos during a wedding or event, and display them in real-time on a large screen (slideshow mode). It features a dedicated **Guest Space** for uploading photos and a **Host Dashboard** for managing the event, generating QR codes, and moderating content.
 
-*<img width="1268" height="746" alt="Capture d&#39;écran 2026-07-22 124507" src="https://github.com/user-attachments/assets/c4e84659-99f2-48cf-b14f-aebd3a3fd49f" />*
+<img width="1268" height="746" alt="Capture d&#39;écran 2026-07-22 124507" src="https://github.com/user-attachments/assets/c4e84659-99f2-48cf-b14f-aebd3a3fd49f" />
+<img width="1278" height="743" alt="Capture d&#39;écran 2026-07-22 124646" src="https://github.com/user-attachments/assets/37683c0c-bc96-4004-ae18-c6b93045f63f" />
+<img width="1265" height="742" alt="Capture d&#39;écran 2026-07-22 124623" src="https://github.com/user-attachments/assets/8e90e0f9-c427-4630-a151-3e28aa711240" />
 
 ---
 
