@@ -1,21 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '../firebaseAuth';
+import { Photo } from '../types';
 
-export interface Photo {
-  id: string;
-  name: string;
-  createdTime: string;
-  guestName: string;
-  caption: string;
-  url: string;
-  thumbnailUrl: string;
-  likes?: number;
-  status?: 'pending' | 'approved' | 'rejected';
-}
+export type { Photo };
 
 export const useGallery = (filterStatus?: 'pending' | 'approved' | 'rejected' | 'all') => {
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [allPhotos, setAllPhotos] = useState<Photo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +15,7 @@ export const useGallery = (filterStatus?: 'pending' | 'approved' | 'rejected' | 
     const q = query(collection(db, 'photos'), orderBy('createdAt', 'desc'));
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      let fetchedPhotos: Photo[] = [];
+      const fetchedPhotos: Photo[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         
@@ -47,11 +38,7 @@ export const useGallery = (filterStatus?: 'pending' | 'approved' | 'rejected' | 
         });
       });
       
-      if (filterStatus && filterStatus !== 'all') {
-        fetchedPhotos = fetchedPhotos.filter(p => p.status === filterStatus);
-      }
-      
-      setPhotos(fetchedPhotos);
+      setAllPhotos(fetchedPhotos);
       setIsLoading(false);
       setError(null);
     }, (err) => {
@@ -62,6 +49,13 @@ export const useGallery = (filterStatus?: 'pending' | 'approved' | 'rejected' | 
 
     return () => unsubscribe();
   }, []);
+
+  const photos = useMemo(() => {
+    if (!filterStatus || filterStatus === 'all') {
+      return allPhotos;
+    }
+    return allPhotos.filter(p => p.status === filterStatus);
+  }, [allPhotos, filterStatus]);
 
   const toggleLikePhoto = useCallback(async (photoId: string) => {
     try {

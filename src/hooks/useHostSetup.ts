@@ -6,6 +6,7 @@ export const useHostSetup = () => {
   const { session, updateConfig, hostUser } = useWedding();
   const [formData, setFormData] = useState({
     weddingName: session.weddingName || '',
+    weddingDate: session.weddingDate || '',
     folderName: session.folderName || 'Photos de Mariage',
     guestGalleryEnabled: session.guestGalleryEnabled ?? true,
     themeColor: (session.themeColor || 'rose') as ThemeColor,
@@ -31,6 +32,7 @@ export const useHostSetup = () => {
 
       await updateConfig({
         weddingName: formData.weddingName,
+        weddingDate: formData.weddingDate,
         folderName: formData.folderName,
         guestGalleryEnabled: formData.guestGalleryEnabled,
         themeColor: formData.themeColor,

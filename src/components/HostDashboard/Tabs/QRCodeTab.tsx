@@ -62,7 +62,9 @@ export const QRCodeTab = () => {
           ) : t('shareLook')}
         </div>
         <h3 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mb-2">{session.weddingName}</h3>
-        <p className="font-serif italic text-slate-500 mb-8 text-lg sm:text-xl print:text-2xl">21 novembre 2026</p>
+        {session.weddingDate && (
+          <p className="font-serif italic text-slate-500 mb-8 text-lg sm:text-xl print:text-2xl">{session.weddingDate}</p>
+        )}
         
         <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl w-fit max-w-full mx-auto mb-8 border border-slate-100 shadow-inner">
           {qrCodeUrl ? (

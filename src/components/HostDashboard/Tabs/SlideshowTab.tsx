@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Maximize2, Settings, Minimize2 } from 'lucide-react';
+import { Play, Pause, Maximize2, Settings, Minimize2, QrCode } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import QRCode from 'qrcode';
 import { useWedding } from '../../../contexts/WeddingContext';
 import { useGallery } from '../../../hooks/useGallery';
 
@@ -12,6 +13,20 @@ export const SlideshowTab = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [speed, setSpeed] = useState(4); // seconds
+  const [showQrCode, setShowQrCode] = useState(true);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
+
+  useEffect(() => {
+    const cleanUrl = window.location.origin.replace(/\/$/, '');
+    const guestUrl = `${cleanUrl}?role=guest`;
+    QRCode.toDataURL(guestUrl, {
+      width: 260,
+      margin: 1,
+      color: { dark: '#0f172a', light: '#ffffff' },
+    })
+      .then(setQrCodeUrl)
+      .catch((err) => console.error("QR Code error:", err));
+  }, []);
 
   // Auto-play effect
   useEffect(() => {
@@ -121,6 +136,28 @@ export const SlideshowTab = () => {
           </motion.div>
         </AnimatePresence>
 
+        {/* Live Guest QR Code in corner (fullscreen) */}
+        {showQrCode && qrCodeUrl && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6, duration: 0.4 }}
+            className="absolute bottom-8 right-8 z-40 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-2xl border border-white/60 flex items-center gap-3.5 max-w-sm pointer-events-auto"
+          >
+            <div className="p-1 bg-white rounded-xl shadow-sm border border-slate-100 shrink-0">
+              <img src={qrCodeUrl} alt="QR Code" className="w-16 h-16 sm:w-20 sm:h-20 object-contain" />
+            </div>
+            <div className="text-left pr-2">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-rose-600 block">
+                Participez en direct
+              </span>
+              <p className="text-xs sm:text-sm font-semibold text-slate-900 leading-tight mt-0.5">
+                Flashez pour projeter vos photos !
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Controls Overlay (appears on hover) */}
         <div className="absolute top-0 left-0 right-0 p-6 flex justify-end opacity-0 hover:opacity-100 transition-opacity duration-300 z-50">
           <button 
@@ -145,13 +182,13 @@ export const SlideshowTab = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h3 className="text-2xl font-bold text-slate-900">Diaporama Live</h3>
           <p className="text-slate-500">Projetez les photos en temps réel sur grand écran</p>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
             <Settings className="w-4 h-4 text-slate-400" />
             <select 
@@ -164,6 +201,19 @@ export const SlideshowTab = () => {
               <option value={8}>Lent (8s)</option>
             </select>
           </div>
+
+          <button 
+            onClick={() => setShowQrCode(!showQrCode)}
+            className={`px-3.5 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 transition-all border ${
+              showQrCode
+                ? 'bg-rose-50 text-rose-700 border-rose-200 shadow-xs'
+                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+            }`}
+            title="Afficher/masquer le QR Code sur l'écran"
+          >
+            <QrCode className="w-4 h-4" />
+            <span className="hidden md:inline">QR Code {showQrCode ? 'activé' : 'masqué'}</span>
+          </button>
           
           <button 
             onClick={() => setIsPlaying(!isPlaying)}
@@ -223,6 +273,17 @@ export const SlideshowTab = () => {
           <p className="text-white font-serif italic text-2xl mb-1">{currentPhoto.guestName}</p>
           {currentPhoto.caption && <p className="text-white/90 text-sm font-light">{currentPhoto.caption}</p>}
         </div>
+
+        {/* Live Guest QR Code preview corner */}
+        {showQrCode && qrCodeUrl && (
+          <div className="absolute bottom-4 right-4 z-30 bg-white/95 backdrop-blur-md p-2.5 rounded-xl shadow-xl border border-white/60 flex items-center gap-2.5 pointer-events-none">
+            <img src={qrCodeUrl} alt="QR Code" className="w-10 h-10 object-contain rounded-md" />
+            <div className="text-left text-xs pr-1">
+              <span className="text-[9px] font-bold text-rose-600 block uppercase">Direct</span>
+              <p className="text-[11px] font-semibold text-slate-800 leading-none">Flashez pour participer</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

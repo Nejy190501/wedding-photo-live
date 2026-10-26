@@ -11,8 +11,35 @@ import { ActiveTab, ThemeColor } from '../../types';
 import { THEMES } from '../../constants';
 
 export const HostDashboard = () => {
-  const { session } = useWedding();
+  const { session, needsAuth, hostUser, isLoggingIn, handleHostLogin, setRole } = useWedding();
   const [activeTab, setActiveTab] = useState<ActiveTab>('qr');
+
+  if (needsAuth || !hostUser) {
+    return (
+      <div className="max-w-md mx-auto my-12 bg-white p-8 sm:p-10 rounded-3xl border border-slate-100 shadow-xl text-center">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-6 shadow-inner">
+          <Shield className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-serif font-bold text-slate-900 mb-2">Espace Mariés Sécurisé</h2>
+        <p className="text-slate-500 text-sm leading-relaxed mb-8">
+          Veuillez vous connecter avec votre compte Google organisateur pour gérer votre album, modérer les photos et projeter le diaporama.
+        </p>
+        <button
+          onClick={handleHostLogin}
+          disabled={isLoggingIn}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-2xl transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2"
+        >
+          {isLoggingIn ? "Connexion en cours..." : "Se connecter avec Google"}
+        </button>
+        <button
+          onClick={() => setRole('landing')}
+          className="mt-4 text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors block mx-auto"
+        >
+          Retour à l'accueil
+        </button>
+      </div>
+    );
+  }
 
   if (!session.active) {
     return <SetupForm />;

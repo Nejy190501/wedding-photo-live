@@ -72,6 +72,7 @@ export const WeddingProvider = ({ children }: { children: ReactNode }) => {
         setSession({
           active: true,
           weddingName: data.weddingName,
+          weddingDate: data.weddingDate,
           folderName: data.folderName,
           guestGalleryEnabled: data.guestGalleryEnabled,
           themeColor: data.themeColor,

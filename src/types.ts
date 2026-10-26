@@ -6,10 +6,13 @@ export type ActiveTab = 'qr' | 'gallery' | 'slideshow' | 'guide' | 'moderation';
 export interface WeddingSession {
   active: boolean;
   weddingName?: string;
+  weddingDate?: string;
   folderName?: string;
   guestGalleryEnabled?: boolean;
   themeColor?: string;
   moderationEnabled?: boolean;
+  hostEmail?: string;
+  hostName?: string;
 }
 
 export interface Photo {
@@ -18,17 +21,17 @@ export interface Photo {
   createdTime: string;
   guestName: string;
   caption: string;
+  url: string;
+  thumbnailUrl: string;
   likes?: number;
   status?: 'pending' | 'approved' | 'rejected';
 }
 
 export interface HostConfig {
-  accessToken: string;
-  folderId: string;
-  folderName: string;
   weddingName: string;
-  guestGalleryEnabled: boolean;
+  weddingDate?: string;
   themeColor: string;
+  guestGalleryEnabled?: boolean;
   hostEmail?: string;
   hostName?: string;
 }

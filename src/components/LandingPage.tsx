@@ -108,7 +108,7 @@ export const LandingPage = () => {
           <div className="text-center">
             <div className="w-12 h-12 bg-rose-100 text-rose-700 rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-4">3</div>
             <h4 className="font-serif font-bold text-slate-900 mb-2">Galerie live & Diaporama</h4>
-            <p className="text-slate-500 text-sm leading-relaxed">Toutes les photos sont projetées en temps réel sur l'écran de la salle grâce au Diaporama animé automatique, et archivées à jamais sur votre Drive.</p>
+            <p className="text-slate-500 text-sm leading-relaxed">Toutes les photos sont projetées en temps réel sur l'écran de la salle grâce au Diaporama animé automatique, et téléchargeables en ZIP haute résolution.</p>
           </div>
         </div>
       </div>

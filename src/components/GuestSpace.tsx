@@ -4,56 +4,83 @@ import {
   Upload,
   X,
   CheckCircle,
-  User,
   AlertCircle,
-  ImageIcon,
   Sparkles,
   Camera,
   Languages,
-  ChevronRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import confetti from "canvas-confetti";
 import { useWedding } from "../contexts/WeddingContext";
 import { useGuestUpload } from "../hooks/useGuestUpload";
-import { useGallery } from "../hooks/useGallery";
 import { useTranslation } from "../hooks/useTranslation";
 import { Language } from "../i18n";
 import { THEMES } from "../constants";
 import { ThemeColor } from "../types";
 
-const ParticleBurst = () => {
-  const particles = Array.from({ length: 15 });
+const MicroSparkleBurst = () => {
+  const sparkles = [0, 60, 120, 180, 240, 300];
   return (
-    <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-50">
-      {particles.map((_, i) => {
-        const angle = (i * 360) / particles.length;
-        const radius = 60 + Math.random() * 60;
-        const x = Math.cos((angle * Math.PI) / 180) * radius;
-        const y = Math.sin((angle * Math.PI) / 180) * radius;
-
+    <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-20">
+      {sparkles.map((deg, i) => {
+        const rad = (deg * Math.PI) / 180;
+        const x = Math.cos(rad) * 40;
+        const y = Math.sin(rad) * 40;
         return (
           <motion.div
             key={i}
-            initial={{ x: 0, y: 0, scale: 0, opacity: 1, rotate: 0 }}
-            animate={{
-              x,
-              y,
-              scale: [0, 1.5, 0],
-              opacity: [1, 1, 0],
-              rotate: 180,
-            }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className={`absolute w-3 h-3 ${i % 2 === 0 ? "bg-rose-400" : "bg-pink-300"}`}
-            style={{
-              clipPath:
-                i % 3 === 0
-                  ? "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)"
-                  : "circle(50% at 50% 50%)",
-            }}
+            initial={{ x: 0, y: 0, scale: 0, opacity: 1 }}
+            animate={{ x, y, scale: [0, 1.2, 0], opacity: [1, 0.8, 0] }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="absolute w-2 h-2 rounded-full bg-rose-400"
           />
         );
       })}
+    </div>
+  );
+};
+
+const ElegantSuccessBadge = () => {
+  return (
+    <div className="relative w-20 h-20 mx-auto flex items-center justify-center mb-2">
+      {/* Soft ambient blur ring */}
+      <motion.div
+        initial={{ scale: 0.7, opacity: 0 }}
+        animate={{ scale: [1, 1.15, 1], opacity: [0.35, 0.6, 0.4] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0 rounded-full bg-gradient-to-tr from-rose-200 to-pink-200 blur-lg"
+      />
+      {/* Outer subtle gradient ring */}
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 280, damping: 20 }}
+        className="relative w-18 h-18 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 p-0.5 shadow-xl shadow-rose-500/20 flex items-center justify-center"
+      >
+        <div className="w-full h-full rounded-full bg-white flex items-center justify-center shadow-inner">
+          <svg className="w-9 h-9 text-rose-500" viewBox="0 0 24 24" fill="none">
+            <motion.path
+              d="M5 13l4 4L19 7"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ delay: 0.15, duration: 0.4, ease: "easeOut" }}
+            />
+          </svg>
+        </div>
+      </motion.div>
+      {/* Delicate sparkle accent */}
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.3 }}
+        className="absolute -top-1 -right-1 text-amber-400"
+      >
+        <Sparkles className="w-5 h-5 fill-amber-300 drop-shadow-sm" />
+      </motion.div>
     </div>
   );
 };
@@ -66,8 +93,6 @@ export const GuestSpace = () => {
 
   const { lang, setLang, t } = useTranslation();
 
-  const { photos: galleryPhotos, toggleLikePhoto } = useGallery('approved');
-
   const [greetingIdx, setGreetingIdx] = useState(0);
   const [selectingLang, setSelectingLang] = useState<string | null>(null);
 
@@ -75,7 +100,7 @@ export const GuestSpace = () => {
     guestName,
     setGuestName,
     photos: selectedPhotos,
-    previewUrls,
+    photoItems,
     handlePhotoSelect,
     removePhoto,
     message,
@@ -90,63 +115,66 @@ export const GuestSpace = () => {
 
   useEffect(() => {
     if (uploadStatus === "success") {
-      // Audio Chime
+      // Elegant soft harmonic chime
       try {
         const AudioContext =
           window.AudioContext || (window as any).webkitAudioContext;
         const ctx = new AudioContext();
-        const osc = ctx.createOscillator();
-        const gainNode = ctx.createGain();
 
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(880, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
+        [587.33, 880].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gainNode = ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
 
-        gainNode.gain.setValueAtTime(0, ctx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+          gainNode.gain.setValueAtTime(0, ctx.currentTime);
+          gainNode.gain.linearRampToValueAtTime(0.04 - idx * 0.015, ctx.currentTime + 0.04);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
 
-        osc.connect(gainNode);
-        gainNode.connect(ctx.destination);
+          osc.connect(gainNode);
+          gainNode.connect(ctx.destination);
 
-        osc.start();
-        osc.stop(ctx.currentTime + 0.5);
+          osc.start(ctx.currentTime + idx * 0.04);
+          osc.stop(ctx.currentTime + 0.6);
+        });
       } catch (e) {
         // Ignore audio errors
       }
 
-      // Haptic feedback
+      // Smooth subtle haptic feedback
       if (navigator.vibrate) {
-        navigator.vibrate([100, 50, 100]);
+        navigator.vibrate([35, 20, 35]);
       }
 
-      // Confetti
-      const duration = 3000;
-      const end = Date.now() + duration;
+      // Elegant Pinterest/Instagram-style micro-confetti shimmer (single soft champagne-rose burst)
+      confetti({
+        particleCount: 35,
+        spread: 60,
+        origin: { y: 0.55 },
+        colors: ["#fda4af", "#f43f5e", "#fb7185", "#fde047", "#fbcfe8"],
+        ticks: 90,
+        gravity: 0.9,
+        scalar: 0.8,
+        shapes: ["circle"],
+        zIndex: 9999,
+      });
 
-      const frame = () => {
+      const timer = setTimeout(() => {
         confetti({
-          particleCount: 5,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: ["#f43f5e", "#ec4899", "#fbcfe8"],
+          particleCount: 16,
+          angle: 90,
+          spread: 70,
+          origin: { y: 0.58 },
+          colors: ["#fda4af", "#f43f5e", "#fef08a"],
+          ticks: 80,
+          gravity: 0.75,
+          scalar: 0.65,
+          shapes: ["circle"],
           zIndex: 9999,
         });
-        confetti({
-          particleCount: 5,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: ["#f43f5e", "#ec4899", "#fbcfe8"],
-          zIndex: 9999,
-        });
+      }, 160);
 
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      };
-      frame();
+      return () => clearTimeout(timer);
     }
   }, [uploadStatus]);
 
@@ -387,7 +415,7 @@ export const GuestSpace = () => {
                     : "bg-white/90 border-white shadow-rose-100/40 hover:border-rose-300 hover:bg-rose-50/80"
                 }`}
               >
-                {isSelected && <ParticleBurst />}
+                {isSelected && <MicroSparkleBurst />}
 
                 {isSelected && (
                   <motion.div
@@ -479,47 +507,40 @@ export const GuestSpace = () => {
 
         {uploadStatus === "success" ? (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-10 space-y-6 relative z-10"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="text-center py-8 px-2 space-y-5 relative z-10"
           >
-            <ParticleBurst />
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
-              transition={{ type: "spring", duration: 0.6, delay: 0.1 }}
-              className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto border-2 border-emerald-200 shadow-lg relative"
-            >
-              <div className="absolute inset-0 bg-emerald-100 rounded-full animate-ping opacity-20" />
-              <CheckCircle className="w-12 h-12 relative z-10" />
-            </motion.div>
+            <ElegantSuccessBadge />
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.25, duration: 0.4 }}
+              className="space-y-1.5"
             >
-              <h3 className="text-2xl font-bold font-serif text-slate-900 mb-2 transition-colors">
-                {t("successTitle") || "Merci beaucoup ! 🎉"}
+              <h3 className="text-2xl font-bold font-serif text-slate-900 transition-colors">
+                {t("successTitle") || "Merci beaucoup !"}
               </h3>
-              <p className="text-slate-500 text-sm max-w-sm mx-auto transition-colors">
+              <p className="text-slate-500 text-sm max-w-xs mx-auto leading-relaxed transition-colors">
                 {t("successDesc") ||
                   "Vos photos ont été ajoutées avec succès au livre d'or."}
               </p>
             </motion.div>
 
             <motion.button
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              transition={{ delay: 0.38 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => {
                 const form = document.querySelector("form");
                 if (form) form.reset();
                 resetUpload();
               }}
-              className={`mt-4 px-8 py-3 rounded-xl text-sm font-bold shadow-md transition-all ${styles.accent} flex items-center justify-center gap-2 mx-auto`}
+              className={`mt-3 px-7 py-3.5 rounded-2xl text-sm font-bold shadow-md hover:shadow-lg transition-all ${styles.accent} flex items-center justify-center gap-2 mx-auto`}
             >
               <Camera className="w-4 h-4" />
               {t("sendAnother") || "Envoyer d'autres photos"}
@@ -610,49 +631,55 @@ export const GuestSpace = () => {
               </div>
             </motion.div>
 
-            {previewUrls.length > 0 && (
+            {photoItems.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
+                layout
                 className="grid grid-cols-3 gap-3"
               >
-                <AnimatePresence>
-                  {previewUrls.map((url, index) => (
+                <AnimatePresence mode="popLayout">
+                  {photoItems.map((item, index) => (
                     <motion.div
-                      key={url + index}
+                      key={item.id}
+                      layout
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 25,
+                      exit={{
+                        opacity: 0,
+                        scale: 0.6,
+                        transition: { duration: 0.2, ease: "easeOut" }
                       }}
-                      className="relative aspect-square rounded-2xl overflow-hidden border-2 border-white shadow-md group bg-slate-100"
+                      transition={{
+                        layout: { type: "spring", stiffness: 380, damping: 28 },
+                        opacity: { duration: 0.2 },
+                        scale: { duration: 0.2 }
+                      }}
+                      className="relative aspect-square rounded-2xl overflow-hidden border-2 border-white shadow-md group bg-slate-100 ring-1 ring-slate-900/5"
                     >
                       <img
-                        src={url}
-                        alt={`Preview ${index}`}
-                        className="w-full h-full object-cover"
+                        src={item.previewUrl}
+                        alt={`Photo ${index + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
 
                       {!isUploading && (
                         <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                          whileHover={{ scale: 1.15 }}
+                          whileTap={{ scale: 0.85 }}
                           type="button"
                           onClick={(e) => {
                             e.preventDefault();
-                            removePhoto(index);
+                            e.stopPropagation();
+                            removePhoto(item.id);
                           }}
-                          className="absolute top-1.5 right-1.5 bg-black/40 hover:bg-rose-500 text-white rounded-full p-1.5 backdrop-blur-md transition-colors z-10 shadow-sm"
+                          className="absolute top-1.5 right-1.5 bg-black/60 hover:bg-rose-500 text-white rounded-full p-1.5 backdrop-blur-md transition-all z-10 shadow-md active:scale-90"
+                          aria-label="Supprimer la photo"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <X className="w-3.5 h-3.5 stroke-[2.5]" />
                         </motion.button>
                       )}
 
                       {isUploading && (
-                        <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center">
+                        <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex flex-col items-center justify-center">
                           <div className="animate-spin rounded-full h-6 w-6 border-2 border-rose-200 border-t-rose-600 mb-1" />
                         </div>
                       )}
@@ -662,7 +689,7 @@ export const GuestSpace = () => {
               </motion.div>
             )}
 
-            {previewUrls.length > 0 && isUploading && (
+            {photoItems.length > 0 && isUploading && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -682,19 +709,19 @@ export const GuestSpace = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               whileHover={
-                !(isUploading || selectedPhotos.length === 0)
+                !(isUploading || photoItems.length === 0)
                   ? { scale: 1.02 }
                   : {}
               }
               whileTap={
-                !(isUploading || selectedPhotos.length === 0)
+                !(isUploading || photoItems.length === 0)
                   ? { scale: 0.98 }
                   : {}
               }
               type="submit"
-              disabled={isUploading || selectedPhotos.length === 0}
+              disabled={isUploading || photoItems.length === 0}
               className={`w-full py-4 rounded-2xl font-bold text-white shadow-xl transition-all flex items-center justify-center gap-2 overflow-hidden relative ${
-                isUploading || selectedPhotos.length === 0
+                isUploading || photoItems.length === 0
                   ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
                   : "bg-gradient-to-r from-rose-500 to-pink-600 hover:shadow-rose-500/30"
               }`}
@@ -712,8 +739,8 @@ export const GuestSpace = () => {
                   <Upload className="w-5 h-5 relative z-10" />
                   <span className="tracking-wide relative z-10">
                     Envoyer{" "}
-                    {selectedPhotos.length > 1
-                      ? `(${selectedPhotos.length})`
+                    {photoItems.length > 1
+                      ? `(${photoItems.length})`
                       : ""}
                   </span>
                 </>
@@ -722,117 +749,6 @@ export const GuestSpace = () => {
           </form>
         )}
       </motion.div>
-
-      {session.guestGalleryEnabled && (
-        <div className="mb-12">
-          <div className="flex items-center gap-2 mb-4 justify-center">
-            <div className="h-px bg-slate-200 flex-1 transition-colors" />
-            <h3 className="font-serif text-sm font-bold text-slate-400 uppercase tracking-widest px-2 transition-colors">
-              {t("guestGallery")}
-            </h3>
-            <div className="h-px bg-slate-200 flex-1 transition-colors" />
-          </div>
-
-          {galleryPhotos.length === 0 ? (
-            <div className="text-center py-12 bg-white/50 rounded-2xl border border-slate-100 transition-colors">
-              <ImageIcon className="w-8 h-8 text-slate-300 mx-auto mb-2 transition-colors" />
-              <p className="text-xs text-slate-400 transition-colors">
-                {t("beTheFirst")}
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-4">
-              {galleryPhotos.map((photoItem, i) => {
-                // Alternating subtle rotations for organic feel
-                const rotation = i % 2 === 0 ? 'rotate-2' : '-rotate-3';
-                const yOffset = i % 3 === 1 ? 'translate-y-3' : '';
-                
-                return (
-                  <motion.div
-                    key={photoItem.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: Math.min(i * 0.1, 1) }}
-                    whileHover={{ scale: 1.08, rotate: 0, zIndex: 20 }}
-                    className={`bg-white p-2 sm:p-3 pb-8 sm:pb-10 rounded-sm shadow-xl border border-slate-100 flex flex-col justify-between transition-all cursor-pointer relative ${rotation} ${yOffset} hover:shadow-2xl`}
-                  >
-                    <div className="aspect-square bg-slate-100 relative mb-3 overflow-hidden shadow-inner">
-                      <img
-                        src={photoItem.thumbnailUrl}
-                        alt={photoItem.name}
-                        loading="lazy"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="text-center px-1">
-                      <p className={`font-handwriting text-xl sm:text-2xl text-slate-800 leading-none ${!photoItem.caption ? 'mt-2' : ''}`}>
-                        {photoItem.guestName}
-                      </p>
-                      {photoItem.caption && (
-                        <p className="font-handwriting text-slate-600 text-lg sm:text-xl leading-tight line-clamp-2 mt-1">
-                          {photoItem.caption}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <motion.button 
-                      whileTap={{ scale: 0.8 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (toggleLikePhoto) toggleLikePhoto(photoItem.id);
-                        
-                        // Heart particle effect
-                        confetti({
-                          particleCount: 15,
-                          spread: 40,
-                          origin: {
-                            x: e.clientX / window.innerWidth,
-                            y: e.clientY / window.innerHeight
-                          },
-                          colors: ['#f43f5e', '#ec4899', '#fca5a5'],
-                          zIndex: 9999,
-                          ticks: 50,
-                          gravity: 0.8,
-                          scalar: 0.8,
-                          shapes: ['circle']
-                        });
-                      }}
-                      className="absolute bottom-1 right-1 p-1.5 rounded-full hover:bg-rose-50 transition-colors flex items-center gap-1 group/like z-10"
-                    >
-                      <Heart className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors ${photoItem.likes && photoItem.likes > 0 ? 'fill-rose-500 text-rose-500' : 'text-slate-300 group-hover/like:text-rose-400'}`} />
-                      {photoItem.likes && photoItem.likes > 0 ? (
-                        <span className="text-xs font-bold text-rose-600">{photoItem.likes}</span>
-                      ) : null}
-                    </motion.button>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Floating Action Button (FAB) for Camera */}
-      {session.guestGalleryEnabled && galleryPhotos.length > 0 && (
-        <motion.button
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            setTimeout(() => {
-              const fileInput = document.querySelector(
-                'input[type="file"]',
-              ) as HTMLInputElement;
-              if (fileInput) fileInput.click();
-            }, 300);
-          }}
-          className="fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] bg-gradient-to-r from-rose-500 to-pink-600 text-white flex items-center justify-center hover:shadow-rose-500/40 transition-shadow"
-        >
-          <Camera className="w-6 h-6" />
-        </motion.button>
-      )}
     </div>
   );
 };

@@ -115,7 +115,9 @@ export const GalleryTab = () => {
       const photosToDownload = photos.filter(p => selectedIds.has(p.id));
 
       let processed = 0;
-      for (const photo of photosToDownload) {
+      const CONCURRENCY = 5;
+
+      const downloadPhoto = async (photo: typeof photosToDownload[0]) => {
         try {
           const response = await fetch(photo.url);
           const blob = await response.blob();
@@ -126,13 +128,21 @@ export const GalleryTab = () => {
           zip.file(filename, blob);
         } catch (err) {
           console.error("Erreur téléchargement photo", photo.id, err);
+        } finally {
+          processed++;
+          setDownloadProgress(Math.round((processed / photosToDownload.length) * 100));
         }
-        processed++;
-        setDownloadProgress(Math.round((processed / photosToDownload.length) * 100));
+      };
+
+      // Process downloads in concurrent batches of 5
+      for (let i = 0; i < photosToDownload.length; i += CONCURRENCY) {
+        const chunk = photosToDownload.slice(i, i + CONCURRENCY);
+        await Promise.all(chunk.map(downloadPhoto));
       }
 
       const content = await zip.generateAsync({ type: 'blob' });
-      saveAs(content, 'Mariage-Photos.zip');
+      const zipFileName = `${session.weddingName ? session.weddingName.replace(/[^a-zA-Z0-9]/g, '_') : 'Mariage'}_Photos.zip`;
+      saveAs(content, zipFileName);
     } catch (err) {
       console.error("Erreur génération ZIP ou import des librairies", err);
       alert("Une erreur est survenue lors de la création du ZIP.");

@@ -17,16 +17,24 @@ interface OfflineUpload {
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/cxq1k0ko/image/upload';
 const CLOUDINARY_UPLOAD_PRESET = 'mariage';
 
+export interface GuestPhotoItem {
+  id: string;
+  file: File;
+  previewUrl: string;
+}
+
 export const useGuestUpload = (moderationEnabled: boolean = false) => {
   const [guestName, setGuestName] = useState('');
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [photoItems, setPhotoItems] = useState<GuestPhotoItem[]>([]);
   const [message, setMessage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [isOfflineSyncing, setIsOfflineSyncing] = useState(false);
+
+  const photos = photoItems.map(item => item.file);
+  const previewUrls = photoItems.map(item => item.previewUrl);
 
   useEffect(() => {
     const handleOnline = () => {
@@ -94,8 +102,7 @@ export const useGuestUpload = (moderationEnabled: boolean = false) => {
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
-      const validFiles: File[] = [];
-      const newPreviewUrls: string[] = [];
+      const newItems: GuestPhotoItem[] = [];
       let hasTooLargeFile = false;
 
       for (const file of newFiles) {
@@ -104,8 +111,12 @@ export const useGuestUpload = (moderationEnabled: boolean = false) => {
           hasTooLargeFile = true;
           continue;
         }
-        validFiles.push(file);
-        newPreviewUrls.push(URL.createObjectURL(file));
+        const id = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}-${file.name}`;
+        newItems.push({
+          id,
+          file,
+          previewUrl: URL.createObjectURL(file),
+        });
       }
 
       if (hasTooLargeFile) {
@@ -114,17 +125,39 @@ export const useGuestUpload = (moderationEnabled: boolean = false) => {
         setErrorMessage('');
       }
 
-      setPhotos(prev => [...prev, ...validFiles]);
-      setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+      setPhotoItems(prev => [...prev, ...newItems]);
       setUploadStatus('idle');
+      // Reset input element value to allow re-selecting same files if desired
+      e.target.value = '';
     }
   };
 
-  const removePhoto = (indexToRemove: number) => {
-    setPhotos(prev => prev.filter((_, index) => index !== indexToRemove));
-    setPreviewUrls(prev => {
-      URL.revokeObjectURL(prev[indexToRemove]); // Free memory
-      return prev.filter((_, index) => index !== indexToRemove);
+  const removePhoto = (idOrIndex: string | number) => {
+    setPhotoItems(prev => {
+      let itemToRemove: GuestPhotoItem | undefined;
+      let nextItems: GuestPhotoItem[];
+
+      if (typeof idOrIndex === 'number') {
+        itemToRemove = prev[idOrIndex];
+        nextItems = prev.filter((_, index) => index !== idOrIndex);
+      } else {
+        itemToRemove = prev.find(item => item.id === idOrIndex);
+        nextItems = prev.filter(item => item.id !== idOrIndex);
+      }
+
+      if (itemToRemove?.previewUrl) {
+        const urlToRevoke = itemToRemove.previewUrl;
+        // Delay revocation slightly so exiting animation can complete without blanking out
+        setTimeout(() => {
+          try {
+            URL.revokeObjectURL(urlToRevoke);
+          } catch (e) {
+            // ignore
+          }
+        }, 1000);
+      }
+
+      return nextItems;
     });
   };
 
@@ -270,8 +303,12 @@ export const useGuestUpload = (moderationEnabled: boolean = false) => {
       }
 
       setUploadStatus('success');
-      setPhotos([]);
-      setPreviewUrls([]);
+      photoItems.forEach(p => {
+        try {
+          URL.revokeObjectURL(p.previewUrl);
+        } catch (e) {}
+      });
+      setPhotoItems([]);
       setMessage('');
       
     } catch (error: any) {
@@ -285,15 +322,19 @@ export const useGuestUpload = (moderationEnabled: boolean = false) => {
   };
 
   const resetUpload = () => {
-    setPhotos([]);
-    setPreviewUrls([]);
+    photoItems.forEach(p => {
+      try {
+        URL.revokeObjectURL(p.previewUrl);
+      } catch (e) {}
+    });
+    setPhotoItems([]);
     setMessage('');
     setUploadStatus('idle');
   };
 
   return {
     guestName, setGuestName,
-    photos, previewUrls, handlePhotoSelect, removePhoto,
+    photos, previewUrls, photoItems, handlePhotoSelect, removePhoto,
     message, setMessage,
     isUploading, uploadProgress, uploadStatus, errorMessage,
     handleUpload, resetUpload

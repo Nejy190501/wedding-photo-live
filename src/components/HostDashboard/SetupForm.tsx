@@ -38,18 +38,16 @@ export const SetupForm = () => {
           />
         </div>
 
-        <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-xl">
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Date du mariage (pour vos cartons de table)</label>
           <input 
-            type="checkbox"
-            name="guestGalleryEnabled"
-            id="guestGallery"
-            checked={formData.guestGalleryEnabled}
+            type="text"
+            name="weddingDate"
+            value={formData.weddingDate}
             onChange={handleChange}
-            className="w-5 h-5 rounded text-rose-600 focus:ring-rose-500 border-slate-300 mt-0.5"
+            placeholder="Ex: 21 novembre 2026"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500 font-medium"
           />
-          <label htmlFor="guestGallery" className="text-xs text-slate-600 leading-relaxed cursor-pointer">
-            <strong>Permettre la Galerie aux invités</strong> : Les invités pourront également voir et défiler les photos envoyées par les autres personnes de la salle sur leur téléphone.
-          </label>
         </div>
 
         <div>
