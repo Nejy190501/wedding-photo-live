@@ -5,6 +5,9 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind" />
   <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
   <img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite" />
+  <a href="https://github.com/Nejy190501/wedding-photo-live/actions/workflows/ci.yml">
+    <img src="https://github.com/Nejy190501/wedding-photo-live/actions/workflows/ci.yml/badge.svg" alt="CI Build" />
+  </a>
 
   <br />
   <br />
