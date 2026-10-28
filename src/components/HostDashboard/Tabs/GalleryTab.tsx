@@ -77,7 +77,7 @@ export const GalleryTab = () => {
     }
     
     // We iterate over the selected IDs and delete documents in Firestore
-    for (const id of Array.from(selectedIds)) {
+    for (const id of Array.from(selectedIds) as string[]) {
       try {
         await deleteDoc(doc(db, 'photos', id));
       } catch (err) {
@@ -106,7 +106,7 @@ export const GalleryTab = () => {
     try {
       // Dynamic imports to prevent top-level module crashes and save bundle size
       const JSZipModule = await import('jszip');
-      const JSZip = JSZipModule.default || JSZipModule;
+      const JSZip = (JSZipModule.default || JSZipModule) as any;
       
       const FileSaverModule = await import('file-saver');
       const saveAs = FileSaverModule.saveAs || (FileSaverModule as any).default?.saveAs || FileSaverModule.default;

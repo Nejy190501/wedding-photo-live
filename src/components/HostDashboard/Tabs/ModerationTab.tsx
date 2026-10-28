@@ -43,7 +43,7 @@ export const ModerationTab = () => {
 
   const handleApproveSelected = async () => {
     if (!window.confirm(`Valider ces ${selectedIds.size} photo(s) pour le diaporama ?`)) return;
-    for (const id of Array.from(selectedIds)) {
+    for (const id of Array.from(selectedIds) as string[]) {
       try {
         await updateDoc(doc(db, 'photos', id), { status: 'approved' });
       } catch (err) {}
@@ -54,7 +54,7 @@ export const ModerationTab = () => {
 
   const handleDeleteSelected = async () => {
     if (!window.confirm(`Rejeter et supprimer ces ${selectedIds.size} photo(s) ?`)) return;
-    for (const id of Array.from(selectedIds)) {
+    for (const id of Array.from(selectedIds) as string[]) {
       try {
         await deleteDoc(doc(db, 'photos', id));
       } catch (err) {}
